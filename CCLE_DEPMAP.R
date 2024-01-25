@@ -67,16 +67,32 @@ gene_dependency_cormatrix_goodnames <- tibble(Gene = colnames(gene_dependency_co
 gene_dependency_cor_matrix <- gene_dependency_cormatrix_goodnames
 write.csv(gene_dependency_final, "gene_dependency_cor_matrix.csv")
 
+# Framework for Making Correlation Matrix within a certain cancer type -----
+
+gene_dependency_cor_matrix_colon <- gene_dependency_metadata |>
+  relocate(primary_disease) |>
+  select(!2:29) |>
+  filter(primary_disease == "Colon/Colorectal Cancer") |>
+  select(!1) |>
+  cor()
+
+gene_dependency_cor_matrix_colon_tibble <- as.tibble(gene_dependency_cor_matrix_colon)
+
+gene_dependency_cor_matrix_colon_goodnames <- tibble(Gene = colnames(gene_dependency_cor_matrix_colon_tibble), gene_dependency_cor_matrix_colon_tibble)
+
+gene_dependency_cor_matrix_colon <- gene_dependency_cor_matrix_colon_goodnames
+write.csv(gene_dependency_final, "gene_dependency_cor_matrix.csv")
+
 # Functions ---------------------------------------------------------------
 
 
 # Get a List of Correlation Between Two Genes in all Cancer Types (output: 32x2) ---------
 
 gene_dependency_metadata |>
-  select(SLC7A5, SLC7A1, primary_disease) |>
+  select(SLC7A1, SLC7A5, primary_disease) |>
   group_by(primary_disease) |>
   summarize(
-    correlation = cor(SLC7A5, SLC7A1)
+    correlation = cor(SLC7A1, SLC7A5)
   ) |>
   arrange(desc(correlation)) |>
   print(n = Inf)
@@ -103,7 +119,7 @@ most_essential <- function(Gene_name, howmany = 20) {
     print(n = howmany)
 }
 
-most_essential(SLC7A1, 30)
+most_essential(MDH1)
 
 # Get a matrix of correlations with genes of your choice. -------------
 
@@ -240,6 +256,8 @@ uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS"
 
 slc7list <- c("SLC7A1", "SLC7A2", "SLC7A3", "SLC7A4", "SLC7A5", "SLC7A6", "SLC7A7", "SLC7A8", "SLC7A9", "SLC7A10", "SLC7A11", "SLC7A13")
 
+tca_list <- c("ACACA", "ACLY", "ACO2", "AHCY", "ALDOA", "CS", "DHFR2", "DLAT", "DLD", "DLST", "ENO1", "FASN", "GAPDH", "GPI", "HK2", "IDH3A", "MAT2A", "MDH2", "MTHFD1", "OGDH", "PDHA1", "PDHB", "PFKP", "PGK1", "PKM", "SDHA", "SDHAF2", "SDHB", "SDHC", "SDHD", "SLC25A1", "TYMS")
+
 cluster_graph <- function(list, line_cutoff = 0.25, title = "Random") {
 list1 <- list
 list1 <- sort(list1)
@@ -264,9 +282,6 @@ pca_data_complete <- cbind(pca_data[, 1:2], Gene = gene_names)
 pca_data_complete
 
 pca_data <- as.tibble(pca_data_complete)
-pca_data |>
-  print(n = Inf)
-
 
 result_df <- tca_matrix |>
   as.data.frame() |>
@@ -275,20 +290,14 @@ result_df <- tca_matrix |>
     cols = !1,
     names_to = "Gene2",
     values_to = "Value"
-  ) 
+  ) |>
+  select(!1)
 
 gene_df <- data.frame(Genes = rep(list1, each = length(list1)))
-gene_df$Gene2 <- list1
-
 gene_df <- as.tibble(gene_df)
-result_df <- as.tibble(result_df)
+final_df <- as.tibble(cbind(gene_df, result_df))
+final_df <- final_df |> rename(Gene1 = Genes)
 
-final_df <- cbind(gene_df, result_df)
-final_df <- final_df[,-3:-4]
-final_df <- as.tibble(final_df)
-
-final_df <- final_df |>
-  rename(Gene1 = Genes)
 
 final_df <- final_df |>
   mutate(plot_line_if = ifelse(Value > line_cutoff, Value, 0))
@@ -310,7 +319,6 @@ pca_data |>
        subtitle = paste0("Line cutoff r < ", line_cutoff, "\n Line Opaqueness Corresponds to Correlation Strength")) +
   theme(plot.title = element_text(hjust = 0.5, size = 20), plot.subtitle = element_text(hjust = 0.5, size = 12), legend.position = "none") 
 
-
 }
 
-cluster_graph(slc7list, 0.10, "SLC7A Family")
+cluster_graph(tca_list, 0.35, "Urea Cycle")
