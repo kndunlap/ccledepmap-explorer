@@ -165,8 +165,6 @@ check_mean_stdev <- function(howmany) {
 check_mean_stdev(-50)
   
 
-
-
 # Make a Correlation Matrix Graph -----------------------------------------------
 
 ggcorrplot(tca_matrix)
@@ -312,7 +310,7 @@ pca_data |>
                                     yend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.2,
                                     alpha = plot_line_if)
   ) +
-  theme(legend.position = c(0.85, 0.8)) +
+  theme(legend.position = c(0.85, 0.79)) +
   scale_alpha_continuous(range = c(0, 1), guide = FALSE) +
   theme_void() +
   labs(title = paste0(title, " Networking Chart"),
