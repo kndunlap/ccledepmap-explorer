@@ -7,6 +7,7 @@ library(corrr)
 library(ggcorrplot)
 library(FactoMineR)
 library(factoextra)
+library(ggrepel)
 
 
 # Import Files ------------------------------------------------------------
@@ -17,7 +18,6 @@ gene_effect <- read_csv("1 - CRISPRGeneEffect.csv")
 gene_effect_metadata <- read_csv("2 - gene_effect_withinfo.csv")
 gene_effect_cor_matrix <- read_csv("3 - gene_effect_cor_matrix.csv")
 gene_dependency <- read_csv("4 - CRISPRGeneDependency.csv")
-
 gene_dependency_metadata <- read_csv("5 - gene_dependency_withinfo.csv")
 
 gene_dependency_cor_matrix <- read_csv("6 - gene_dependency_cor_matrix.csv")
@@ -256,67 +256,3 @@ slc7list <- c("SLC7A1", "SLC7A2", "SLC7A3", "SLC7A4", "SLC7A5", "SLC7A6", "SLC7A
 
 tca_list <- c("ACACA", "ACLY", "ACO2", "AHCY", "ALDOA", "CS", "DHFR2", "DLAT", "DLD", "DLST", "ENO1", "FASN", "GAPDH", "GPI", "HK2", "IDH3A", "MAT2A", "MDH2", "MTHFD1", "OGDH", "PDHA1", "PDHB", "PFKP", "PGK1", "PKM", "SDHA", "SDHAF2", "SDHB", "SDHC", "SDHD", "SLC25A1", "TYMS")
 
-cluster_graph <- function(list, line_cutoff = 0.25, title = "Random") {
-list1 <- list
-list1 <- sort(list1)
-tca_matrix <- gene_dependency_cor_matrix |>
-  select(all_of(list1), Gene) |>
-  filter(Gene %in% list1) |>
-  select(!Gene)
-
-data.pca <- princomp(tca_matrix)
-summary(data.pca)
-
-pca_data <- data.pca$loadings[, 1:2]
-pca_data
-
-pca_data <- as.data.frame(pca_data)
-pca_data
-
-gene_names <- rownames(pca_data)
-gene_names
-
-pca_data_complete <- cbind(pca_data[, 1:2], Gene = gene_names)
-pca_data_complete
-
-pca_data <- as.tibble(pca_data_complete)
-
-result_df <- tca_matrix |>
-  as.data.frame() |>
-  rownames_to_column(var = "Gene1") |>
-  pivot_longer(
-    cols = !1,
-    names_to = "Gene2",
-    values_to = "Value"
-  ) |>
-  select(!1)
-
-gene_df <- data.frame(Genes = rep(list1, each = length(list1)))
-gene_df <- as.tibble(gene_df)
-final_df <- as.tibble(cbind(gene_df, result_df))
-final_df <- final_df |> rename(Gene1 = Genes)
-
-
-final_df <- final_df |>
-  mutate(plot_line_if = ifelse(Value > line_cutoff, Value, 0))
-
-pca_data |>
-  ggplot(aes(x = Comp.1, y = Comp.2)) +
-  geom_point(size = 6, alpha = 0.4, color = "red") +
-  geom_text_repel(aes(label = Gene), fontface = "bold", size = 4, force = 23) +
-  geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
-                                    y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
-                                    xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
-                                    yend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.2,
-                                    alpha = plot_line_if)
-  ) +
-  theme(legend.position = c(0.85, 0.79)) +
-  scale_alpha_continuous(range = c(0, 1), guide = FALSE) +
-  theme_void() +
-  labs(title = paste0(title, " Networking Chart"),
-       subtitle = paste0("Line cutoff r < ", line_cutoff, "\n Line Opaqueness Corresponds to Correlation Strength")) +
-  theme(plot.title = element_text(hjust = 0.5, size = 20), plot.subtitle = element_text(hjust = 0.5, size = 12), legend.position = "none") 
-
-}
-
-cluster_graph(tca_list, 0.35, "Urea Cycle")
