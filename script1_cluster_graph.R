@@ -10,7 +10,7 @@ library(ggrepel)
 # 2. Define list of genes (each gene must be in quotes) -----------------------------------------------
 
 uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS",	"AGMAT",	"SLC25A2",	
-                "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD",	"ASNS",	"NOS1",	"NOS2",	"NOS3")
+                "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD", "ASNS",	"NOS1",	"NOS2",	"NOS3")
 
 
 # 3. Code - Run this but don't change anything ----------------------------
@@ -22,6 +22,11 @@ cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
   
   list1 <- list
   list1 <- sort(list1)
+  
+  if(any(!list %in% colnames(gene_dependency_cor_matrix))) {
+    stop("Sorry, I don't recognize one of your genes. Try again! It might not exist in this dataset, or you have called it by the wrong name.")
+  }
+  
   tca_matrix <- gene_dependency_cor_matrix |>
     select(all_of(list1), Gene) |>
     filter(Gene %in% list1) |>
