@@ -7,7 +7,7 @@ library(factoextra)
 library(ggrepel)
 
 
-# 2. Define a list of genes (each gene must be in quotes) -----------------------------------------------
+# 2. Define list of genes (each gene must be in quotes) -----------------------------------------------
 
 uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS",	"AGMAT",	"SLC25A2",	
                 "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD",	"ASNS",	"NOS1",	"NOS2",	"NOS3")
@@ -93,3 +93,5 @@ cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
 # Example function call is below 
 
 cluster_graph("7 - gene_dependency_cor_matrix_rounded.csv", uc_list, 0.25, "Urea Cycle")
+
+
