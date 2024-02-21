@@ -1,15 +1,9 @@
-Hello! I'm Kyle and I'm here with ccledepmap-explorer. This is a way to visualize and interact with the dependency scores found in the Achilles DEPMAP dataset.
-A lot of this work was inspired by an excellent paper out of the lab of Lydia Finley. They analyzed CRISPR essentiality scores and observed that genes involved in the TCA cycle gather into distinct clusters. As you can see by the figure below.
-<img width="663" alt="Finley_Fig1A" src="https://github.com/kndunlap/ccledepmap-explorer/assets/61035909/024fc69b-20b8-474b-81e4-682ea59f0207">
+# Overview
+Hello! I'm Kyle and I'm here with ccledepmap-explorer. This README will instruct you on how to create a network plot using Dependency scores from CERES. 
+I have two scripts available - one is if you already have the correlation matrix, and the other is if you only have the CERES score sheet.
 
-I made it my mission to first try and re-create this figure. Once I had done that, I was planning on making a network graph for the Urea Cycle genes that I often work with.
-The first thing that I had to do was collect some datasets. These are stored on the Utah Biochem Fileserver.
-```
-ccle_metadata <- read_csv("0 - sample_info.csv")
-gene_effect <- read_csv("1 - CRISPRGeneEffect.csv")
-gene_effect_metadata <- read_csv("2 - gene_effect_withinfo.csv")
-gene_effect_cor_matrix <- read_csv("3 - gene_effect_cor_matrix.csv")
-gene_dependency <- read_csv("4 - CRISPRGeneDependency.csv")
-gene_dependency_metadata <- read_csv("5 - gene_dependency_withinfo.csv")
-gene_dependency_cor_matrix <- read_csv("6 - gene_dependency_cor_matrix.csv")
-```
+To use the first script, you need to give R a correlation matrix sheet and a list of genes. If you want the one from the most updated CERES Dependency Dataset, download the ~2.2 GB file from this link: https://drive.google.com/file/d/1aA6IJ2Mm_AHgAXjzNE5JDUFz8Kw6KT_S/view?usp=drive_link. Then, that can be your input when you run the code.
+
+To use the second script, you can give R a dependency list of your choice. You might want to do this if you are only looking in a subset of cell lines for example. If you do that you'll probably have to manipulate the input sheet somehow but I can help with that.
+
+
