@@ -1,5 +1,4 @@
-# Load Packages -----------------------------------------------------------
-
+# 1. Run these commands first ---------------------------------------------
 library(tidyverse)
 library(corrr)
 library(ggcorrplot)
@@ -8,24 +7,36 @@ library(factoextra)
 library(ggrepel)
 
 
-# Import or Load the Cor Matrix Fil ----------------------------------------------
-
-
-gene_dependency_cor_matrix <- read_csv("6 - gene_dependency_cor_matrix.csv")
-gene_dependency_cor_matrix <- gene_dependency_cor_matrix |> select(!1)
-
-load("6_cor_matrix.Rdata") 
-gene_dependency_cor_matrix <- gene_dependency_cor_matrix |> select(!1)
-
-# Define List -------------------------------------------------------------
+# 2. Define list of genes (each gene must be in quotes) ----------------------------------------------
 
 uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS",	"AGMAT",	"SLC25A2",	
-             "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD",	"ASNS",	"NOS1",	"NOS2",	"NOS3")
+             "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD", "ASNS",	"NOS1",	"NOS2",	"NOS3")
 
-cluster_graph <- function(list, line_cutoff = 0.25, title = "Random") {
+
+# 3. Code - Run this but don't change anything ----------------------------
+
+cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
+  
+  gene_dependency_cor_matrix <- read_csv(file, col_types = cols(.default = "d", ...1 = "c"))|>
+    rename(Gene = ...1)
+  
+  cor_matrix <- gene_dependency_cor_matrix |>
+    select(-Gene) |>
+    cor() 
+    
+  colnames(cor_matrix) <- sub("\\s*\\(\\d+\\)", "", colnames(cor_matrix))
+  
+  cor_matrix_tibble <- as.tibble(cor_matrix)
+  cor_matrix_final_tibble <- tibble(Gene = colnames(cor_matrix_tibble), cor_matrix_tibble)
+  
+  if(any(!list %in% colnames(gene_dependency_cor_matrix))) {
+    stop("Sorry, I don't recognize one of your genes. Try again! It might not exist in this dataset, or you have called it by the wrong name.")
+  }
+  
   list1 <- list
   list1 <- sort(list1)
-  tca_matrix <- gene_dependency_cor_matrix |>
+  
+  tca_matrix <- cor_matrix_final_tibble |>
     select(all_of(list1), Gene) |>
     filter(Gene %in% list1) |>
     select(!Gene)
@@ -85,4 +96,15 @@ cluster_graph <- function(list, line_cutoff = 0.25, title = "Random") {
   
 }
 
-cluster_graph(uc_list, 0.10, "Urea Cycle")
+# 4. Run command - give 4 inputs. ---------------------------------------
+
+
+# a. file name(Must be a CSV in your directory)
+# b. the name of the list, defined in Step 2
+# c. A line cutoff. Default is 0.25
+# d. A title for your graph, must be in quotes.
+
+# Example function call is below 
+
+cluster_graph("CRISPRGeneDependency.csv", uc_list, 0.25, "Urea Cycle")
+
