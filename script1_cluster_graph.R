@@ -7,7 +7,7 @@ library(factoextra)
 library(ggrepel)
 
 
-# 2. Define list of genes (each gene must be in quotes) -----------------------------------------------
+# 2. Define list of genes (each gene must be in quotes) ----------------------------------------------
 
 uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS",	"AGMAT",	"SLC25A2",	
                 "SLC25A15",	"SLC7A1",	"SLC7A5",	"CAD", "ASNS",	"NOS1",	"NOS2",	"NOS3")
