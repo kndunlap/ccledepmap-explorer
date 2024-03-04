@@ -1,5 +1,7 @@
 # Overview
-Hello! I'm Kyle and I'm here with ccledepmap-explorer. This README will instruct you on how to create a network plot using Dependency scores from CERES. This allows you to make plots similar to the one in Fig. 1A of this paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8934290/
+Hello! I'm Kyle and I'm here with ccledepmap-explorer. This README will instruct you on how to create a network plot using Dependency scores from CERES. This allows you to make plots similar to the one in Fig. 1A of this paper: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8934290/. This tool uses Principal Component Analysis (PCA) to cluster genes together. Below is a re-creation of this figure in the link.
+
+<img width="548" alt="Picture1" src="https://github.com/kndunlap/ccledepmap-explorer/assets/61035909/0661d973-d2cb-428a-b68a-e441cd1cd491">
 
 I have two scripts available for now - one is if you already have the correlation matrix, and the other is if you only have the CERES score sheet.
 
