@@ -15,17 +15,21 @@ uc_list <- c("ASL",	"ASS1",	"ARG1",	"OTC", "FH",	"CPS1",	"CEBPA",	"ARG2",	"NAGS"
 
 # 3. Code - Run this but don't change anything ----------------------------
 
-cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
+cluster_graph1 <- function(file, list, line_cutoff = 0.25, title) {
   gene_dependency_cor_matrix <- read_csv(file, col_types = cols(.default = "d", Gene = "c"))
   
   gene_dependency_cor_matrix <- gene_dependency_cor_matrix |> select(!1)
   
+  list1 <- list[!(list %in% colnames(gene_dependency_cor_matrix))]
+  print(list1)
+  if(any(!list %in% colnames(gene_dependency_cor_matrix))) {
+    stop(paste0("Sorry, I don't recognize the following gene(s):\n ", 
+                list1, 
+                " \nTry again! It might not exist in this dataset, or you have called it by the wrong name."))
+  }
+  
   list1 <- list
   list1 <- sort(list1)
-  
-  if(any(!list %in% colnames(gene_dependency_cor_matrix))) {
-    stop("Sorry, I don't recognize one of your genes. Try again! It might not exist in this dataset, or you have called it by the wrong name.")
-  }
   
   tca_matrix <- gene_dependency_cor_matrix |>
     select(all_of(list1), Gene) |>
@@ -71,7 +75,7 @@ cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
   pca_data |>
     ggplot(aes(x = Comp.1, y = Comp.2)) +
     geom_point(size = 6, alpha = 0.4, color = "red") +
-    geom_text_repel(aes(label = Gene), fontface = "bold", size = 4, force = 11) +
+    geom_text_repel(aes(label = Gene), fontface = "bold", size = 5, force = 11) +
     geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
                                       y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
                                       xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
@@ -97,6 +101,6 @@ cluster_graph <- function(file, list, line_cutoff = 0.25, title) {
 
 # Example function call is below 
 
-cluster_graph("7 - gene_dependency_cor_matrix_rounded.csv", uc_list, 0.25, "Urea Cycle")
+cluster_graph1("7 - gene_dependency_cor_matrix_rounded.csv", uc_list, 0.30, "Urea Cycle")
 
 
