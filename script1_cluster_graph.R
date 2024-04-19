@@ -1,8 +1,5 @@
-# 1. Run these commands first ---------------------------------------------
+# 1. Run these commands first - install the packages if you haven't ---------------------------------------------
 library(tidyverse)
-library(corrr)
-library(ggcorrplot)
-library(FactoMineR)
 library(factoextra)
 library(ggrepel)
 
@@ -37,20 +34,10 @@ cluster_graph1 <- function(file, list, line_cutoff = 0.25, title) {
     select(!Gene)
   
   data.pca <- princomp(tca_matrix)
-  summary(data.pca)
-  
   pca_data <- data.pca$loadings[, 1:2]
-  pca_data
-  
   pca_data <- as.data.frame(pca_data)
-  pca_data
-  
   gene_names <- rownames(pca_data)
-  gene_names
-  
   pca_data_complete <- cbind(pca_data[, 1:2], Gene = gene_names)
-  pca_data_complete
-  
   pca_data <- as.tibble(pca_data_complete)
   
   result_df <- tca_matrix |>
@@ -68,14 +55,13 @@ cluster_graph1 <- function(file, list, line_cutoff = 0.25, title) {
   final_df <- as.tibble(cbind(gene_df, result_df))
   final_df <- final_df |> rename(Gene1 = Genes)
   
-  
   final_df <- final_df |>
     mutate(plot_line_if = ifelse(Value > line_cutoff, Value, 0))
   
   pca_data |>
     ggplot(aes(x = Comp.1, y = Comp.2)) +
     geom_point(size = 6, alpha = 0.4, color = "red") +
-    geom_text_repel(aes(label = Gene), fontface = "bold", size = 5, force = 11) +
+    geom_text_repel(aes(label = Gene), size = 3.5, force = 11) +
     geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
                                       y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
                                       xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
@@ -101,6 +87,6 @@ cluster_graph1 <- function(file, list, line_cutoff = 0.25, title) {
 
 # Example function call is below 
 
-cluster_graph1("7 - gene_dependency_cor_matrix_rounded.csv", uc_list, 0.30, "Urea Cycle")
+cluster_graph1("7 - gene_dependency_cor_matrix_rounded.csv", uc_list, 0.15, "Urea Cycle")
 
 

@@ -1,8 +1,5 @@
-# 1. Run these commands first ---------------------------------------------
+# 1. Run these commands first - install the packages if you haven't ---------------------------------------------
 library(tidyverse)
-library(corrr)
-library(ggcorrplot)
-library(FactoMineR)
 library(factoextra)
 library(ggrepel)
 
@@ -84,7 +81,7 @@ cluster_graph2 <- function(file, list, line_cutoff = 0.25, title) {
   pca_data |>
     ggplot(aes(x = Comp.1, y = Comp.2)) +
     geom_point(size = 6, alpha = 0.4, color = "red") +
-    geom_text_repel(aes(label = Gene), fontface = "bold", size = 4, force = 11) +
+    geom_text_repel(aes(label = Gene), size = 3.5, force = 11) +
     geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
                                       y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
                                       xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
@@ -103,7 +100,7 @@ cluster_graph2 <- function(file, list, line_cutoff = 0.25, title) {
 # 4. Run command - give 4 inputs. ---------------------------------------
 
 
-# a. file name(Must be a CSV in your directory)
+# a. file name (Must be a CSV in your directory)
 # b. the name of the list, defined in Step 2
 # c. A line cutoff. Default is 0.25
 # d. A title for your graph, must be in quotes.
