@@ -1,4 +1,8 @@
 # 1. Run these commands first - install the packages if you haven't ---------------------------------------------
+# you can install packages with 
+# install.packages("tidyverse")
+# install.packages("factoextra")
+# install.packages("ggrepel")
 library(tidyverse)
 library(factoextra)
 library(ggrepel)
