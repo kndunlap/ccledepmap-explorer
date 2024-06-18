@@ -62,8 +62,12 @@ cluster_graph2 <- function(file, list, line_cutoff = 0.25, title) {
   
   pca_data <- as.tibble(pca_data_complete)
   
-  pca_data <- pca_data |>
-    left_join(example)
+  has_second_column <- ncol(example) > 1
+  
+  if (has_second_column) {
+    pca_data <- pca_data |>
+      left_join(example)
+  }
   
   result_df <- tca_matrix |>
     as.data.frame() |>
@@ -83,26 +87,48 @@ cluster_graph2 <- function(file, list, line_cutoff = 0.25, title) {
   final_df <- final_df |>
     mutate(plot_line_if = ifelse(Value > line_cutoff, Value, 0))
   
-  pca_data |>
-    ggplot(aes(x = Comp.1, y = Comp.2)) +
-    geom_point(aes(size = 6, alpha = 0.8, color = Group)) +
-    geom_text_repel(aes(label = Gene), size = 3.5, force = 11) +
-    geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
-                                      y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
-                                      xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
-                                      yend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.2,
-                                      alpha = plot_line_if)
-    ) +
-    scale_alpha_continuous(range = c(0, 1), guide = FALSE) +
-    theme_void() +
-    labs(title = paste0(title, "Networking Chart"),
-         subtitle = paste0("Line cutoff r < ", line_cutoff, "\n Line Opaqueness Corresponds to Correlation Strength")) +
-    theme(plot.title = element_text(hjust = 0.5, size = 20), 
-          plot.subtitle = element_text(hjust = 0.5, size = 12),
-          legend.position = c(0.07, 0.98)) +
-    guides(size = "none", 
-           color = guide_legend(override.aes = list(size = 6)))
-
+  if (has_second_column) {
+    p <- pca_data |>
+      ggplot(aes(x = Comp.1, y = Comp.2)) +
+      geom_point(aes(size = 6, alpha = 0.8, color = Group)) +
+      geom_text_repel(aes(label = Gene), size = 3.5, force = 11) +
+      geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
+                                        y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
+                                        xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
+                                        yend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.2,
+                                        alpha = plot_line_if)
+      ) +
+      scale_alpha_continuous(range = c(0, 1), guide = FALSE) +
+      theme_void() +
+      labs(title = paste0(title, " Networking Chart"),
+           subtitle = paste0("Line cutoff r < ", line_cutoff, "\n Line Opaqueness Corresponds to Correlation Strength")) +
+      theme(plot.title = element_text(hjust = 0.5, size = 20), 
+            plot.subtitle = element_text(hjust = 0.5, size = 12),
+            legend.position = c(0.07, 0.98)) +
+      guides(size = "none", 
+             color = guide_legend(override.aes = list(size = 6)))
+  } else {
+    p <- pca_data |>
+      ggplot(aes(x = Comp.1, y = Comp.2)) +
+      geom_point(aes(size = 6, alpha = 0.8, color = "red")) +
+      geom_text_repel(aes(label = Gene), size = 3.5, force = 11) +
+      geom_segment(data = final_df, aes(x = pca_data[match(Gene1, pca_data$Gene), ]$Comp.1,
+                                        y = pca_data[match(Gene1, pca_data$Gene), ]$Comp.2,
+                                        xend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.1,
+                                        yend = pca_data[match(Gene2, pca_data$Gene), ]$Comp.2,
+                                        alpha = plot_line_if)
+      ) +
+      scale_alpha_continuous(range = c(0, 1), guide = FALSE) +
+      theme_void() +
+      labs(title = paste0(title, " Networking Chart"),
+           subtitle = paste0("Line cutoff r < ", line_cutoff, "\n Line Opaqueness Corresponds to Correlation Strength")) +
+      theme(plot.title = element_text(hjust = 0.5, size = 20), 
+            plot.subtitle = element_text(hjust = 0.5, size = 12),
+            legend.position = c(0.07, 0.98)) +
+      guides(size = "none")
+  }
+  
+  print(p)
 }
 
 # 4. Run command - give 4 inputs. ---------------------------------------
@@ -115,5 +141,5 @@ cluster_graph2 <- function(file, list, line_cutoff = 0.25, title) {
 
 # Example function call is below 
 
-cluster_graph2("CRISPRGeneDependency.csv", "example.csv", 0.10, "Urea Cycle ")
+cluster_graph2("CRISPRGeneDependency.csv", "example_less.csv", 0.30, "Urea Cycle ")
 
