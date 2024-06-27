@@ -122,7 +122,7 @@ cluster_graph1 <- function(file, list, line_cutoff = 0.25, title) {
 
 # Example function call is below 
 
-cluster_graph1("7 - gene_dependency_cor_matrix_rounded.csv", "example_less.csv", 0.10, "Urea Cycle")
+cluster_graph1("7 - gene_dependency_cor_matrix_rounded.csv", "example.csv", 0.25, "Urea Cycle")
 
 
   
